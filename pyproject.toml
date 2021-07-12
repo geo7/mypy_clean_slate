@@ -9,7 +9,7 @@ homepage = "https://github.com/geo7/mypy_clean_slate"
 keywords = ['mypy', 'typing', 'typehint', 'type-hint']
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.7"
 mypy = "^0.910"
 black = "^21.6b0"
 pre-commit = "^2.13.0"
@@ -24,6 +24,9 @@ ipython = "^7.25.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+
+[tool.poetry.scripts]
+mypy_clean_slate = "mypy_clean_slate.main:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
