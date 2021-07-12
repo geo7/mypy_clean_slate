@@ -1,7 +1,9 @@
 # Mypy Clean Slate
 
-Ignore all errors thrown by mypy so as to provide a "clean slate" from which to run mypy
-with strict settings.
+CLI tool for providing a clean slate for mypy usage within a project
+
+It can be difficult to get a large project to the point where `mypy --strict` can be run on it. Rather than incrementally increasing the severity, either overall or per module, `mypy_clean_slate` enables one to ignore all previous errors so that `mypy --strict` (or similar) can be used immediately.
+
 
 # Usage
 
@@ -20,6 +22,8 @@ optional arguments:
   -o MYPY_REPORT_OUTPUT, --mypy_report_output MYPY_REPORT_OUTPUT
                         File to save report output to (default is mypy_error_report.txt)
 ```
+
+See `./tests/test_mypy_clean_slate.py` for an example.
 
 # Issues
 
