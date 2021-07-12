@@ -3,6 +3,10 @@ name = "mypy_clean_slate"
 version = "0.1.0"
 description = "CLI tool for providing a clean slate for mypy usage within a project."
 authors = ["George Lenton <georgelenton@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/geo7/mypy_clean_slate"
+keywords = ['mypy', 'typing', 'typehint', 'type-hint']
 
 [tool.poetry.dependencies]
 python = "^3.9"
