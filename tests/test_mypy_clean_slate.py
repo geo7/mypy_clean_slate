@@ -7,7 +7,7 @@ from mypy_clean_slate import __version__, main
 
 
 def test_version() -> None:
-    assert __version__ == "0.1.0"
+    assert __version__ == "0.1.1"
 
 
 def test_mypy_clean_slate_usage() -> None:
