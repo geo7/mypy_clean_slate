@@ -55,14 +55,14 @@ def test_mypy_clean_slate_usage() -> None:
     """
     ).strip()
 
-    python_file = pathlib.Path("file_to_test.py")
+    python_file = pathlib.Path("file_to_check.py")
     python_file.write_text(py_file_before_fix)
+
     # there's probably a much nicer way to write these tests.
     report_output = pathlib.Path("testing_report_output.txt")
     report_output.write_text(main.generate_mypy_error_report())
 
     main.add_type_ignores(report_output=report_output)
-
     assert python_file.read_text().strip() == py_file_after_fix
 
     # clean up
