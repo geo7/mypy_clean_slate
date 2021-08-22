@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mypy_clean_slate"
-version = "0.1.3"
+version = "0.1.4"
 description = "CLI tool for providing a clean slate for mypy usage within a project."
 authors = ["George Lenton <georgelenton@gmail.com>"]
 license = "MIT"
@@ -24,6 +24,9 @@ ipython = "^7.25.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+
+[tool.poetry.build]
+generate-setup-file = false
 
 [tool.poetry.scripts]
 mypy_clean_slate = "mypy_clean_slate.main:main"
