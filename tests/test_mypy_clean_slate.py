@@ -56,11 +56,13 @@ def test_mypy_clean_slate_usage(tmp_path: pathlib.Path) -> None:
     ).strip()
 
     python_file = pathlib.Path(tmp_path, "file_to_check.py")
-    python_file.write_text(py_file_before_fix)
+    python_file.write_text(py_file_before_fix, encoding="utf8")
 
     # there's probably a much nicer way to write these tests.
     report_output = pathlib.Path(tmp_path, "testing_report_output.txt")
-    report_output.write_text(main.generate_mypy_error_report(path_to_code=python_file))
+    report_output.write_text(
+        main.generate_mypy_error_report(path_to_code=python_file), encoding="utf8"
+    )
 
     main.add_type_ignores(report_output=report_output)
-    assert python_file.read_text().strip() == py_file_after_fix
+    assert python_file.read_text(encoding="utf8").strip() == py_file_after_fix

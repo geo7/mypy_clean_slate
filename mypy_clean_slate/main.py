@@ -37,7 +37,8 @@ def generate_mypy_error_report(
         "--strict",
     ]
 
-    print("Generating mypy report using: {}".format(" ".join(mypy_command)))
+    print(f"Generating mypy report using: {' '.join(mypy_command)}")
+
     # Mypy is likely to return '1' here (otherwise pointless using this script)
     mypy_process = subprocess.run(  # pylint: disable=subprocess-run-check
         mypy_command,
@@ -81,19 +82,15 @@ def extract_code_comment(*, line: str) -> Tuple[str, str]:
         t for t in tokenize.generate_tokens(reader) if t.type == tokenize.COMMENT
     ]
 
-    if len(comment_tokens) == 0:
-        # no comment tokens generated.
-        python_code = line
-        python_comment = ""
-    elif len(comment_tokens) == 1:
-        comment = comment_tokens[0]
-        python_code = line[0 : comment.start[1]]
-        python_comment = line[comment.start[1] :]
-    else:
+    # If there's an inline comment then only expect a single one.
+    if len(comment_tokens) != 1:
         raise ValueError(
-            f"Expected there to be a single comment token, have: {len(comment_tokens)}"
+            f"Expected there to be a single comment token, have {len(comment_tokens)}"
         )
 
+    comment_token = comment_tokens[0]
+    python_code = line[0 : comment_token.start[1]]
+    python_comment = line[comment_token.start[1] :]
     return python_code, python_comment
 
 
@@ -123,7 +120,7 @@ def update_files(*, file_updates: list[FileUpdate]) -> None:
     ):
         file_path, line_number = pth_and_line_num
         error_codes = ", ".join(x[2] for x in grp)
-        file_lines = pathlib.Path(file_path).read_text().split("\n")
+        file_lines = pathlib.Path(file_path).read_text(encoding="utf8").split("\n")
 
         python_code, python_comment = extract_code_comment(line=file_lines[line_number])
         mypy_ignore = f"# type: ignore[{error_codes}]"
@@ -137,7 +134,7 @@ def update_files(*, file_updates: list[FileUpdate]) -> None:
         # needs to be handled separately.
         file_lines[line_number] = line_update.rstrip(" ")
         new_text = "\n".join(file_lines)
-        with open(file_path, "w") as file:
+        with open(file_path, "w", encoding="utf8") as file:
             file.write(new_text)
 
 
@@ -156,22 +153,16 @@ def extract_file_line_number_and_error_code(
     for error_line in error_report_lines:
         if not line_contains_error(error_message=error_line):
             continue
-
         # 'check.py:13: error: \
         # Call to untyped function "main" in typed context [no-untyped-call]'
         file_path, line_number, *_ = error_line.split(":")
         # mypy will report the first line as '1' rather than '0'.
         line_num = int(line_number) - 1
-
-        if re.match(r"^.*\[.*\]$", error_line):
-            # this is (should be) a line with a well formed error message.
-            error_message = raise_if_none(
-                value=re.match(r"^.*\[(.*)\]$", error_line)
-            ).group(1)
-            file_updates.append((file_path, line_num, error_message))
+        if error_message := re.match(r"^.*\[(.*)\]$", error_line):
+            file_updates.append((file_path, line_num, error_message.group(1)))
         else:
-            # haven't seen anything else yet, though there might be other error types
-            # which need to be handled.
+            # haven't seen anything else yet, though there might be other error types which need to
+            # be handled.
             raise RuntimeError(f"Unexpected line format: {error_line}")
 
     return file_updates
@@ -184,7 +175,6 @@ def add_type_ignores(
     """Add `# type: ignore` to all lines which fail on given mypy command."""
     error_report_lines = read_mypy_error_report(path_to_error_report=report_output)
     assert_report_contains_errors(report=error_report_lines)
-
     # process all lines in report.
     file_updates = extract_file_line_number_and_error_code(
         error_report_lines=error_report_lines
@@ -241,7 +231,7 @@ def main() -> int:
     if args.generate_mypy_error_report:
 
         report = generate_mypy_error_report(path_to_code=args.path_to_code)
-        report_output.write_text(report)
+        report_output.write_text(report, encoding="utf8")
 
     if args.add_type_ignore:
         add_type_ignores(report_output=report_output)
