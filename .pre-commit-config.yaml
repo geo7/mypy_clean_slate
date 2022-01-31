@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.1.0
     hooks:
       - id: check-added-large-files
       - id: check-ast
@@ -25,7 +25,7 @@ repos:
     - id: black
       language_version: python3
     repo: https://github.com/psf/black
-    rev: 21.6b0
+    rev: 22.1.0
   - hooks:
     - id: autoflake
       args:
@@ -36,7 +36,7 @@ repos:
       - id: isort
         language_version: python3
     repo: https://github.com/timothycrosley/isort
-    rev: 5.9.2
+    rev: 5.10.1
   - repo: local
     hooks:
     - id: pylint
