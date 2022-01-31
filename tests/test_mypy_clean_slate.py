@@ -22,7 +22,7 @@ def test_mypy_clean_slate_usage(tmp_path: pathlib.Path) -> None:
         return arg_1 + arg_2
 
 
-    add(arg_1=1, arg_2="s")
+    add(arg_1=1, arg_2="s") # inline comment.
 
 
     def useless_sub(*, arg_1: float, arg_2: Sequence):
@@ -36,24 +36,24 @@ def test_mypy_clean_slate_usage(tmp_path: pathlib.Path) -> None:
 
     py_file_after_fix = textwrap.dedent(
         """
-    from __future__ import annotations
+from __future__ import annotations
 
 
-    def add(*, arg_1, arg_2):  # type: ignore[no-untyped-def]
-        return arg_1 + arg_2
+def add(*, arg_1, arg_2):  # type: ignore[no-untyped-def]
+    return arg_1 + arg_2
 
 
-    add(arg_1=1, arg_2="s")  # type: ignore[no-untyped-call]
+add(arg_1=1, arg_2="s")   # type: ignore[no-untyped-call] # inline comment.
 
 
-    def useless_sub(*, arg_1: float, arg_2: Sequence):  # type: ignore[no-untyped-def, name-defined]
-        return add(arg_1=arg_1, arg_2="what") - arg_2  # type: ignore[no-untyped-call]
+def useless_sub(*, arg_1: float, arg_2: Sequence):  # type: ignore[no-untyped-def, name-defined]
+    return add(arg_1=arg_1, arg_2="what") - arg_2  # type: ignore[no-untyped-call]
 
 
-    useless_sub(arg_1=3, arg_2=4)
-    useless_sub(arg_1=3, arg_2="4")
-    """
-    ).strip()
+useless_sub(arg_1=3, arg_2=4)
+useless_sub(arg_1=3, arg_2="4")
+    """.strip()
+    )
 
     python_file = pathlib.Path(tmp_path, "file_to_check.py")
     python_file.write_text(py_file_before_fix, encoding="utf8")
