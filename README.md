@@ -1,5 +1,10 @@
 # Mypy Clean Slate
 
+[![PyPI Latest Release](https://img.shields.io/pypi/v/mpl-table.svg)](https://pypi.org/project/mypy-clean-slate/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License](https://img.shields.io/pypi/l/mypy-clean-slate.svg)](https://github.com/geo7/mypy_clean_slate/blob/main/LICENSE)
+
+
 CLI tool for providing a clean slate for mypy usage within a project
 
 ## Motivation
