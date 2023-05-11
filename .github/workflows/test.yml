@@ -1,6 +1,51 @@
 name: CI
 on: [push]
 jobs:
+  test:
+    # needs: linting # TODO: add linting
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ "ubuntu-latest", "macos-latest" ]
+        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      #----------------------------------------------
+      #       check-out repo and set-up python
+      #----------------------------------------------
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Set up python ${{ matrix.python-version }}
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      #----------------------------------------------
+      #  -----  install & configure poetry  -----
+      #----------------------------------------------
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      #----------------------------------------------
+      # install dependencies if cache does not exist
+      #----------------------------------------------
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction
+      #----------------------------------------------
+      # install your root project, if required
+      #----------------------------------------------
+      - name: Install library
+        run: poetry install --no-interaction
+      #----------------------------------------------
+      #    add matrix specifics and run test suite
+      #----------------------------------------------
+      - name: Pytest ${{ matrix.python-version }}
+        run: poetry run pytest
+
   test_python38:
     name: Test on Python 3.8
     runs-on: ubuntu-22.04
@@ -45,4 +90,50 @@ jobs:
           poetry install --no-interaction
       - name: Pytest
         run: poetry run pytest
+  test_python310:
+    name: Test on Python 3.10
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction
+      - name: Pytest
+        run: poetry run pytest
+  test_python311:
+    name: Test on Python 3.10
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction
+      - name: Pytest
+        run: poetry run pytest
+
+
 
