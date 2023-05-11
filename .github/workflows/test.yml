@@ -2,7 +2,7 @@ name: CI
 on: [push]
 jobs:
   test_python38:
-    name: Test
+    name: Test on Python 3.8
     runs-on: ubuntu-20.04
     timeout-minutes: 10
     steps:
@@ -24,7 +24,7 @@ jobs:
       - name: Pytest
         run: poetry run pytest
   test_python39:
-    name: Test
+    name: Test on Python 3.9
     runs-on: ubuntu-20.04
     timeout-minutes: 10
     steps:
