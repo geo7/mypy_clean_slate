@@ -229,7 +229,6 @@ def main() -> int:
         report_output = pathlib.Path(args.mypy_report_output)
 
     if args.generate_mypy_error_report:
-
         report = generate_mypy_error_report(path_to_code=args.path_to_code)
         report_output.write_text(report, encoding="utf8")
 
