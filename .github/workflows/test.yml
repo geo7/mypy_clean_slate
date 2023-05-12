@@ -46,94 +46,94 @@ jobs:
       - name: Pytest ${{ matrix.python-version }}
         run: poetry run pytest
 
-  test_python38:
-    name: Test on Python 3.8
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.8'
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      - name: Install dependencies
-        run: |
-          poetry install --no-interaction
-      - name: Pytest
-        run: poetry run pytest
-  test_python39:
-    name: Test on Python 3.9
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.9'
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      - name: Install dependencies
-        run: |
-          poetry install --no-interaction
-      - name: Pytest
-        run: poetry run pytest
-  test_python310:
-    name: Test on Python 3.10
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.10'
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      - name: Install dependencies
-        run: |
-          poetry install --no-interaction
-      - name: Pytest
-        run: poetry run pytest
-  test_python311:
-    name: Test on Python 3.10
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.10'
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      - name: Install dependencies
-        run: |
-          poetry install --no-interaction
-      - name: Pytest
-        run: poetry run pytest
+  # test_python38:
+  #   name: Test on Python 3.8
+  #   runs-on: ubuntu-22.04
+  #   timeout-minutes: 10
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.8'
+  #     - name: Install Poetry
+  #       uses: snok/install-poetry@v1
+  #       with:
+  #         virtualenvs-create: true
+  #         virtualenvs-in-project: true
+  #         installer-parallel: true
+  #     - name: Install dependencies
+  #       run: |
+  #         poetry install --no-interaction
+  #     - name: Pytest
+  #       run: poetry run pytest
+  # test_python39:
+  #   name: Test on Python 3.9
+  #   runs-on: ubuntu-22.04
+  #   timeout-minutes: 10
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.9'
+  #     - name: Install Poetry
+  #       uses: snok/install-poetry@v1
+  #       with:
+  #         virtualenvs-create: true
+  #         virtualenvs-in-project: true
+  #         installer-parallel: true
+  #     - name: Install dependencies
+  #       run: |
+  #         poetry install --no-interaction
+  #     - name: Pytest
+  #       run: poetry run pytest
+  # test_python310:
+  #   name: Test on Python 3.10
+  #   runs-on: ubuntu-22.04
+  #   timeout-minutes: 10
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.10'
+  #     - name: Install Poetry
+  #       uses: snok/install-poetry@v1
+  #       with:
+  #         virtualenvs-create: true
+  #         virtualenvs-in-project: true
+  #         installer-parallel: true
+  #     - name: Install dependencies
+  #       run: |
+  #         poetry install --no-interaction
+  #     - name: Pytest
+  #       run: poetry run pytest
+  # test_python311:
+  #   name: Test on Python 3.10
+  #   runs-on: ubuntu-22.04
+  #   timeout-minutes: 10
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v3
+  #       with:
+  #         python-version: '3.10'
+  #     - name: Install Poetry
+  #       uses: snok/install-poetry@v1
+  #       with:
+  #         virtualenvs-create: true
+  #         virtualenvs-in-project: true
+  #         installer-parallel: true
+  #     - name: Install dependencies
+  #       run: |
+  #         poetry install --no-interaction
+  #     - name: Pytest
+  #       run: poetry run pytest
 
 
 
