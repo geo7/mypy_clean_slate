@@ -1,16 +1,17 @@
 name: CI
 on: [push]
+
 jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-      - name: Set up python ${{ matrix.python-version }}
+      - name: Set up python "3.11"
         id: setup-python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
       #----------------------------------------------
       #  -----  install & configure poetry  -----
       #----------------------------------------------
