@@ -24,7 +24,7 @@ flake8-eradicate = "^1.2.0"
 autoflake = "^1.4"
 ipython = "^8.0.1"
 ipdb = "^0.13.9"
-ruff = ">=0.0.265,<0.0.276"
+ruff = ">=0.0.265,<0.0.277"
 
 [tool.poetry.build]
 generate-setup-file = false
