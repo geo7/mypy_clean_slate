@@ -10,7 +10,7 @@ keywords = ['mypy', 'typing', 'typehint', 'type-hint']
 
 [tool.poetry.dependencies]
 python = "^3.8"
-mypy = ">=0.910,<1.6"
+mypy = ">=0.910,<1.7"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
