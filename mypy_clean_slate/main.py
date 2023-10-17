@@ -8,17 +8,22 @@ import re
 import subprocess
 import sys
 import tokenize
-from typing import Sequence, Tuple, TypeVar
+from typing import TYPE_CHECKING, TypeVar
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
 
 T = TypeVar("T")
 # contains (file_path, line_number, error_code); file to update, line within that file to
 # append `type: ignore[<error-code>]`
-FileUpdate = Tuple[str, int, str]
+FileUpdate = tuple[str, int, str]
 
 
 def raise_if_none(*, value: T | None) -> T:
     if value is None:
-        raise RuntimeError("None value")
+        msg = "None value"
+        raise RuntimeError(msg)
     return value
 
 
@@ -48,25 +53,28 @@ def generate_mypy_error_report(
     return mypy_process.stdout.decode()
 
 
-def assert_report_contains_errors(
+def exit_if_no_errors(
     *,
     report: Sequence[str],
 ) -> None:
+    # A report with no errors will contain this substring, so if this substring
+    # exists there's nothing to be done.
     success_check = "Success: no issues found in"
-    assert not any(report_line.startswith(success_check) for report_line in report), (
-        "Generated mypy report contains line starting with: "
-        f"{success_check}, so there's probably nothing that needs to be done. "
-        "Full report: \n"
-        f"{report}"
-    )
+    if any(report_line.startswith(success_check) for report_line in report):
+        msg = (
+            "Generated mypy report contains line starting with: "
+            f"{success_check}, so there's probably nothing that needs to be done. "
+            "Full report: \n"
+            f"{report}"
+        )
+        raise SystemExit(msg)
 
 
 # --- Add ` # type: ignore[<error-code>]` to lines which throw errors.
 
 
-def extract_code_comment(*, line: str) -> Tuple[str, str]:
-    """
-    Break line into code,comment if necessary.
+def extract_code_comment(*, line: str) -> tuple[str, str]:
+    """Break line into code,comment if necessary.
 
     When there are lines containing ignores for tooling such as pylint the mypy ignore should be
     placed before the pylint disable. Therefore it's necessary to split lines into code,comment.
@@ -84,8 +92,9 @@ def extract_code_comment(*, line: str) -> Tuple[str, str]:
 
     # If there's an inline comment then only expect a single one.
     if len(comment_tokens) != 1:
+        msg = f"Expected there to be a single comment token, have {len(comment_tokens)}"
         raise ValueError(
-            f"Expected there to be a single comment token, have {len(comment_tokens)}"
+            msg,
         )
 
     comment_token = comment_tokens[0]
@@ -116,7 +125,8 @@ def read_mypy_error_report(
 def update_files(*, file_updates: list[FileUpdate]) -> None:
     # update each line with `# type: ignore[<error-code[s]>]`
     for pth_and_line_num, grp in itertools.groupby(
-        file_updates, key=lambda x: (x[0], x[1])
+        file_updates,
+        key=lambda x: (x[0], x[1]),
     ):
         file_path, line_number = pth_and_line_num
         error_codes = ", ".join(x[2] for x in grp)
@@ -153,7 +163,6 @@ def extract_file_line_number_and_error_code(
     for error_line in error_report_lines:
         if not line_contains_error(error_message=error_line):
             continue
-        # 'check.py:13: error: \
         # Call to untyped function "main" in typed context [no-untyped-call]'
         file_path, line_number, *_ = error_line.split(":")
         # mypy will report the first line as '1' rather than '0'.
@@ -163,7 +172,8 @@ def extract_file_line_number_and_error_code(
         else:
             # haven't seen anything else yet, though there might be other error types which need to
             # be handled.
-            raise RuntimeError(f"Unexpected line format: {error_line}")
+            msg = f"Unexpected line format: {error_line}"
+            raise RuntimeError(msg)
 
     return file_updates
 
@@ -174,10 +184,10 @@ def add_type_ignores(
 ) -> None:
     """Add `# type: ignore` to all lines which fail on given mypy command."""
     error_report_lines = read_mypy_error_report(path_to_error_report=report_output)
-    assert_report_contains_errors(report=error_report_lines)
+    exit_if_no_errors(report=error_report_lines)
     # process all lines in report.
     file_updates = extract_file_line_number_and_error_code(
-        error_report_lines=error_report_lines
+        error_report_lines=error_report_lines,
     )
     update_files(file_updates=file_updates)
 
@@ -204,7 +214,6 @@ def main() -> int:
         "-p",
         "--path_to_code",
         help=("Where code is that needs report generating for it."),
-        # action="store_true",
         default=pathlib.Path("."),
     )
 
@@ -218,7 +227,6 @@ def main() -> int:
         "-o",
         "--mypy_report_output",
         help=("File to save report output to (default is mypy_error_report.txt)"),
-        # default="mypy_error_report.txt",
     )
 
     args = parser.parse_args()

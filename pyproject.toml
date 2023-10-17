@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mypy_clean_slate"
-version = "0.1.5"
+version = "0.2.0"
 description = "CLI tool for providing a clean slate for mypy usage within a project."
 authors = ["George Lenton <georgelenton@gmail.com>"]
 license = "MIT"
@@ -16,7 +16,6 @@ mypy = ">=0.910,<1.7"
 pytest = "^7.3.1"
 black = "^23.1.0"
 pre-commit = ">=2.17,<4.0"
-pylint = ">=2.12.2,<4.0.0"
 isort = "^5.10.1"
 flake8-docstrings = "^1.6.0"
 flake8-return = "^1.1.3"
@@ -25,6 +24,7 @@ autoflake = "^1.4"
 ipython = "^8.0.1"
 ipdb = "^0.13.9"
 ruff = ">=0.0.265,<0.1.1"
+pytest-cov = "^4.1.0"
 
 [tool.poetry.build]
 generate-setup-file = false
@@ -36,6 +36,48 @@ mypy_clean_slate = "mypy_clean_slate.main:main"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.ruff]
+select = ["ALL"]
+ignore = [
+    "ANN101",   #  Missing type annotation for `self` in method
+    "ANN102",   #  Missing type annotation for `cls` in classmethod
+    "ANN204",   #  Missing return type annotation for special method `__attrs_post_init__`
+    "ANN206",   #  Missing return type annotation for classmethod `get_all_human_readable`
+    "D100",     #  Missing docstring in public module
+    "D101",     #  Missing docstring in public class
+    "D102",     #  Missing docstring in public method
+    "D103",     #  Missing docstring in public function
+    "D104",     #  Missing docstring in public package
+    "D105",     #  Missing docstring in magic method
+    "D107",     #  Missing docstring in `__init__`
+    "D401",     #  First line of docstring should be in imperative mood.
+    "PD901",    #  `df` is a bad variable name.
+    "PLR0913",  #  Too many arguments to function call (6 > 5)
+    "PLW1510", # `subprocess.run` without explicit `check` argument
+    "PTH123",   #  `open()` should be replaced by `Path.open()`
+    "PTH201", # [*] Do not pass the current directory explicitly to `Path`
+    "RUF010",   #  [*] Use explicit conversion flag
+    "S311",     #  Standard pseudo-random generators are not suitable for cryptographic purposes
+    "S603",     #  `subprocess` call: check for execution of untrusted input
+    "T100",     #  Trace found: `breakpoint` used
+    "T201",     #  `print` found
+]
+fixable = ["ALL"]
+unfixable = []
+line-length = 100
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"scratch/*" = ["ALL"]
+"tests/*" = [
+    "ANN001",  #  Missing type annotation for function argument `tmpdir`
+    "ANN201",  #  Missing return type annotation for public function `test_get_file_types`
+    "D100",    #  Missing docstring in public module
+    "D101",    #  Missing docstring in public class
+    "D102",    #  Missing docstring in public method
+    "S101",    #  Use of `assert` detected
+]
+
 [tool.isort]
 profile = "black"
 default_section = "THIRDPARTY"
@@ -43,19 +85,3 @@ known_first_party = "mypy_clean_slate"
 sections = "FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
 add_imports="from __future__ import annotations"
 
-[tool.pylint."MESSAGES CONTROL"]
-disable = [
-    # don't want to enforce docstrings.
-    "missing-module-docstring",
-    "missing-function-docstring",
-    # don't care if a class just stores data.
-    "too-few-public-methods",
-]
-good-names = [
-    # typically used with T = TypeVar("T")
-    'T',
-]
-
-[tool.ruff]
-line-length = 100
-target-version = "py311"
