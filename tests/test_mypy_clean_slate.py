@@ -31,7 +31,7 @@ def test_mypy_clean_slate_usage(tmp_path: pathlib.Path) -> None:
 
     useless_sub(arg_1=3, arg_2=4)
     useless_sub(arg_1=3, arg_2="4")
-    """
+    """,
     ).strip()
 
     py_file_after_fix = textwrap.dedent(
@@ -52,7 +52,7 @@ def useless_sub(*, arg_1: float, arg_2: Sequence):  # type: ignore[no-untyped-de
 
 useless_sub(arg_1=3, arg_2=4)
 useless_sub(arg_1=3, arg_2="4")
-    """.strip()
+    """.strip(),
     )
 
     python_file = pathlib.Path(tmp_path, "file_to_check.py")
@@ -61,7 +61,8 @@ useless_sub(arg_1=3, arg_2="4")
     # there's probably a much nicer way to write these tests.
     report_output = pathlib.Path(tmp_path, "testing_report_output.txt")
     report_output.write_text(
-        main.generate_mypy_error_report(path_to_code=python_file), encoding="utf8"
+        main.generate_mypy_error_report(path_to_code=python_file),
+        encoding="utf8",
     )
 
     main.add_type_ignores(report_output=report_output)
