@@ -53,9 +53,9 @@ ignore = [
     "D401",     #  First line of docstring should be in imperative mood.
     "PD901",    #  `df` is a bad variable name.
     "PLR0913",  #  Too many arguments to function call (6 > 5)
-    "PLW1510", # `subprocess.run` without explicit `check` argument
+    "PLW1510",  #  `subprocess.run` without explicit `check` argument
     "PTH123",   #  `open()` should be replaced by `Path.open()`
-    "PTH201", # [*] Do not pass the current directory explicitly to `Path`
+    "PTH201",   #  [*] Do not pass the current directory explicitly to `Path`
     "RUF010",   #  [*] Use explicit conversion flag
     "S311",     #  Standard pseudo-random generators are not suitable for cryptographic purposes
     "S603",     #  `subprocess` call: check for execution of untrusted input
@@ -84,4 +84,3 @@ default_section = "THIRDPARTY"
 known_first_party = "mypy_clean_slate"
 sections = "FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
 add_imports="from __future__ import annotations"
-
