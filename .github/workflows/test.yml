@@ -33,7 +33,7 @@ jobs:
       - name: Check black formatting
         run: poetry run black --check .
       - name: Check ruff
-        run: poetry run ruff check .  
+        run: poetry run ruff check .
 
   test:
     needs: linting
