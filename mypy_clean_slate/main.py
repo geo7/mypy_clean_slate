@@ -86,9 +86,7 @@ def extract_code_comment(*, line: str) -> tuple[str, str]:
     # generate_tokens wants a "callable returning a single line of input"
     reader = io.StringIO(line).readline
 
-    comment_tokens = [
-        t for t in tokenize.generate_tokens(reader) if t.type == tokenize.COMMENT
-    ]
+    comment_tokens = [t for t in tokenize.generate_tokens(reader) if t.type == tokenize.COMMENT]
 
     # If there's an inline comment then only expect a single one.
     if len(comment_tokens) != 1:
@@ -115,9 +113,7 @@ def read_mypy_error_report(
     ]
     # typically a '' at the end of the report - any lines which are just '' (or ' ') are
     # of no use though.
-    error_report_lines_filtered = [
-        line for line in error_report_lines_no_summary if line.strip()
-    ]
+    error_report_lines_filtered = [line for line in error_report_lines_no_summary if line.strip()]
     # return list sorted by file path (file path is at the start of all lines in error report).
     return sorted(error_report_lines_filtered)
 
@@ -197,9 +193,7 @@ def add_type_ignores(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description=(
-            "CLI tool for providing a clean slate for mypy usage within a project."
-        ),
+        description=("CLI tool for providing a clean slate for mypy usage within a project."),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
