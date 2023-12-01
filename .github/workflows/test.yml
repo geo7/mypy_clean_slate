@@ -30,9 +30,9 @@ jobs:
       #----------------------------------------------
       #          install and run linters
       #----------------------------------------------
-      - name: Check black formatting
-        run: poetry run black --check .
-      - name: Check ruff
+      - name: ruff format
+        run: poetry run ruff format . --check
+      - name: ruff check
         run: poetry run ruff check .
 
   test:
