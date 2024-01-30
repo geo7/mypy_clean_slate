@@ -13,7 +13,7 @@ python = "^3.9"
 mypy = ">=0.910,<1.8"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.3.1"
+pytest = ">=7.3.1,<9.0.0"
 pre-commit = ">=2.17,<4.0"
 ipython = "^8.0.1"
 ipdb = "^0.13.9"
