@@ -19,6 +19,11 @@ Often running `mypy_clean_slate` will cover all errors cleanly in a single pass,
 
 `mypy_clean_slate` works by parsing the output of `mypy --strict --show-error-codes`, and adding the relevant `type: ignore[code]` to each line. Only errors from the report are considered, notes are not handled. Meaning something such as `error: Function is missing a type annotation  [no-untyped-def]` will have `# type: ignore[no-untyped-def]` appended to the end of the line, whereas `note: (Skipping most remaining errors due to unresolved imports or missing stubs; fix these first)` will be ignored.
 
+# Installation
+
+```bash
+pip install mypy-clean-slate
+```
 
 # Usage
 
