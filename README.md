@@ -27,22 +27,25 @@ pip install mypy-clean-slate
 
 # Usage
 
+[comment]: CLI help split
 ```
-usage: mypy_clean_slate [-h] [-r] [-a] [-o MYPY_REPORT_OUTPUT]
+usage: mypy_clean_slate [options]
 
 CLI tool for providing a clean slate for mypy usage within a project.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -r, --generate_mypy_error_report
                         Generate 'mypy_error_report.txt' in the cwd.
+  -p PATH_TO_CODE, --path_to_code PATH_TO_CODE
+                        Where code is that needs report generating for it.
   -a, --add_type_ignore
-                        Add "# type: ignore[<error-code>]" to suppress all
-                        raised mypy errors.
+                        Add "# type: ignore[<error-code>]" to suppress all raised mypy errors.
   -o MYPY_REPORT_OUTPUT, --mypy_report_output MYPY_REPORT_OUTPUT
-                        File to save report output to (default is
-                        mypy_error_report.txt)
+                        File to save report output to (default is mypy_error_report.txt)
+
 ```
+[comment]: CLI help split
 
 See `./tests/test_mypy_clean_slate.py` for a basic, self contained, before/after example.
 
