@@ -39,6 +39,7 @@ def generate_mypy_error_report(
         "mypy",
         f"{str(path_to_code)}",
         "--show-error-codes",
+        "--no-pretty",
         "--strict",
     ]
 
