@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mypy_clean_slate"
-version = "0.2.1"
+version = "0.2.2"
 description = "CLI tool for providing a clean slate for mypy usage within a project."
 authors = ["George Lenton <georgelenton@gmail.com>"]
 license = "MIT"
@@ -10,14 +10,14 @@ keywords = ['mypy', 'typing', 'typehint', 'type-hint']
 
 [tool.poetry.dependencies]
 python = "^3.9"
-mypy = ">=0.910,<1.8"
+mypy = ">=0.910,<2.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.3.1"
+pytest = ">=8.0.0,<9.0.0"
 pre-commit = ">=2.17,<4.0"
-ipython = "^8.0.1"
+ipython = ">=8.18.1"
 ipdb = "^0.13.9"
-ruff = ">=0.0.265,<0.1.16"
+ruff = ">=0.0.265"
 pytest-cov = "^4.1.0"
 pdbpp = "^0.10.3"
 
@@ -32,6 +32,9 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
 select = ["ALL"]
 ignore = [
     "ANN101",   #  Missing type annotation for `self` in method
@@ -59,9 +62,8 @@ ignore = [
 ]
 fixable = ["ALL"]
 unfixable = []
-line-length = 100
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "scratch/*" = ["ALL"]
 "tests/*" = [
@@ -73,7 +75,7 @@ line-length = 100
     "S101",    #  Use of `assert` detected
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 case-sensitive = true
 combine-as-imports = true
