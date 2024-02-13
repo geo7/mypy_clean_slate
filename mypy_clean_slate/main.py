@@ -74,7 +74,8 @@ def exit_if_no_errors(
 
 
 def extract_code_comment(*, line: str) -> tuple[str, str]:
-    """Break line into code,comment if necessary.
+    """
+    Break line into code,comment if necessary.
 
     When there are lines containing ignores for tooling such as pylint the mypy ignore should be
     placed before the pylint disable. Therefore it's necessary to split lines into code,comment.
@@ -189,14 +190,17 @@ def add_type_ignores(
 
 
 # --- Call functions above.
-
-
-def main() -> int:
+def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=("CLI tool for providing a clean slate for mypy usage within a project."),
         formatter_class=argparse.RawDescriptionHelpFormatter,
+        # Hard-coding this as the usage is dynamic otherwise, based on where the
+        # parser is defined. I'm using print_help() to generate the output of
+        # --help into the README so need this to be consistent. Otherwise,
+        # creating the parser from within mod.py will put mod.py into the usage
+        # rather than the poetry.script entry point for the CLI.
+        usage="mypy_clean_slate [options]",
     )
-
     parser.add_argument(
         "-r",
         "--generate_mypy_error_report",
@@ -222,7 +226,11 @@ def main() -> int:
         "--mypy_report_output",
         help=("File to save report output to (default is mypy_error_report.txt)"),
     )
+    return parser
 
+
+def main() -> int:
+    parser = create_parser()
     args = parser.parse_args()
 
     if args.mypy_report_output is None:
