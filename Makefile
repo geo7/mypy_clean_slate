@@ -25,6 +25,9 @@ cloc:
 	@echo "Code statistics using cloc:"
 	$(CLOC) --exclude-dir=venv .
 
+readme:
+	poetry run python -m scripts.add_help_to_readme
+
 ########
 # LINT #
 ########
@@ -32,7 +35,10 @@ cloc:
 pre-commit-run:
 	poetry run pre-commit run --all-files
 
-lint:
+mypy:
+	poetry run mypy --strict .
+
+lint: mypy
 	poetry run ruff check .
 	poetry run ruff format . --check
 	@$(MAKE) --no-print-directory clean

@@ -23,9 +23,9 @@ def update_readme_cli_help() -> str:
     """Generate README with updated cli --help."""
     result = cli_help_text()
     readme = Path("./README.md").read_text()
-    split_string = "[comment]: CLI help split\n"
+    split_string = "[comment]: # (CLI help split)\n"
     splits = readme.split(split_string)
-    return splits[0] + split_string + "```\n" + result + "\n```\n" + split_string + splits[2]
+    return splits[0] + split_string + "\n```\n" + result + "\n```\n\n" + split_string + splits[2]
 
 
 def main() -> int:

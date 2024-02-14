@@ -27,7 +27,8 @@ pip install mypy-clean-slate
 
 # Usage
 
-[comment]: CLI help split
+[comment]: # (CLI help split)
+
 ```
 usage: mypy_clean_slate [options]
 
@@ -45,7 +46,8 @@ options:
                         File to save report output to (default is mypy_error_report.txt)
 
 ```
-[comment]: CLI help split
+
+[comment]: # (CLI help split)
 
 See `./tests/test_mypy_clean_slate.py` for a basic, self contained, before/after example.
 
