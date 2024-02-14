@@ -157,7 +157,7 @@ def extract_file_line_number_and_error_code(
     *,
     error_report_lines: list[str],
 ) -> list[FileUpdate]:
-    file_updates: list[tuple[str, int, str]] = []
+    file_updates: list[FileUpdate] = []
     for error_line in error_report_lines:
         if not line_contains_error(error_message=error_line):
             continue
@@ -173,7 +173,11 @@ def extract_file_line_number_and_error_code(
             msg = f"Unexpected line format: {error_line}"
             raise RuntimeError(msg)
 
-    return file_updates
+    # Ensure that the returned updates are unique. For example we might have
+    # file_updates as something like  [('f.py', 0, 'attr-defined'), ('f.py', 0,
+    # 'attr-defined')] given code such as object().foo, object().bar - leading
+    # to igore[attr-defined, attr-defined] instead of ignore[attr-defined]
+    return sorted(set(file_updates), key=lambda x: (x[0], x[1], x[2]))
 
 
 def add_type_ignores(
