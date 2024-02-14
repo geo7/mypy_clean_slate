@@ -15,7 +15,7 @@ from scripts import add_help_to_readme
     sys.version_info < (3, 10),
     reason="Changes in argparse output from 3.9 onwards.",
 )
-def test_readme_cli_help():
+def test_readme_cli_help() -> None:
     """Test the README has up to date help output."""
 
     # For some reason I was getting some whitespace differences when generating
