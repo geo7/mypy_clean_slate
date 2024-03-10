@@ -148,3 +148,50 @@ def test_custom_mypy_flags(tmp_path: pathlib.Path) -> None:
 
     main.add_type_ignores(report_output=report_output)
     assert python_file.read_text(encoding="utf8").strip() == py_file_after_fix
+
+
+def test_remove_used_ignores(tmp_path: pathlib.Path) -> None:
+    """Ensure unused ignores raised as errors are removed."""
+    py_file_before_fix = textwrap.dedent(
+        """
+    def f(x : float) -> float:
+        return x ** 2
+
+    def main() -> int:
+        y = f(12)  # type: ignore[no-untyped-call]
+        return 0
+
+    if __name__ == '__main__':
+        raise SystemExit(main())
+    """,
+    ).strip()
+
+    py_file_after_fix = textwrap.dedent(
+        """
+    def f(x : float) -> float:
+        return x ** 2
+
+    def main() -> int:
+        y = f(12)
+        return 0
+
+    if __name__ == '__main__':
+        raise SystemExit(main())
+    """
+    ).strip()
+
+    python_file = pathlib.Path(tmp_path, "file_to_check.py")
+    python_file.write_text(py_file_before_fix, encoding="utf8")
+
+    # there's probably a much nicer way to write these tests.
+    report_output = pathlib.Path(tmp_path, "testing_report_output.txt")
+    report_output.write_text(
+        main.generate_mypy_error_report(
+            path_to_code=python_file,
+            mypy_flags=[""],
+        ),
+        encoding="utf8",
+    )
+    main.remove_unused_ignores(report_output=report_output)
+    main.add_type_ignores(report_output=report_output)
+    assert python_file.read_text(encoding="utf8").strip() == py_file_after_fix
