@@ -34,6 +34,10 @@ usage: mypy_clean_slate [options]
 
 CLI tool for providing a clean slate for mypy usage within a project.
 
+Default expectation is to want to get a project into a state that it
+will pass mypy when run with `--strict`, if this isn't the case custom
+flags can be passed to mypy via the `--mypy_flags` argument.
+
 options:
   -h, --help            show this help message and exit
   -r, --generate_mypy_error_report
@@ -44,12 +48,13 @@ options:
                         Add "# type: ignore[<error-code>]" to suppress all raised mypy errors.
   -o MYPY_REPORT_OUTPUT, --mypy_report_output MYPY_REPORT_OUTPUT
                         File to save report output to (default is mypy_error_report.txt)
-
+  --mypy_flags MYPY_FLAGS
+                        Custom flags to pass to mypy (provide them as a single string, default is to use --strict)
 ```
 
 [comment]: # (CLI help split)
 
-See `./tests/test_mypy_clean_slate.py` for a basic, self contained, before/after example.
+See `./tests/test_mypy_clean_slate.py` for some examples with before/after.
 
 
 
