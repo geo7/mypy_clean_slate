@@ -173,14 +173,29 @@ def line_contains_error(*, error_message: str) -> bool:
     return False
 
 
+def line_is_unused_ignore(*, error_message: str) -> bool:
+    """
+    Return true if line relates to an unused ignore.
+
+    These are treated differently to other messages, in this case the current
+    type: ignore needs to be removed rather than adding one.
+    """
+    if re.match('.*unused.ignore.*|Unused "type: ignore" comment', error_message):
+        return True
+    return False
+
+
 def extract_file_line_number_and_error_code(
     *,
     error_report_lines: list[str],
 ) -> list[FileUpdate]:
     file_updates: list[FileUpdate] = []
     for error_line in error_report_lines:
-        if not line_contains_error(error_message=error_line):
+        if (not line_contains_error(error_message=error_line)) or line_is_unused_ignore(
+            error_message=error_line
+        ):
             continue
+
         # Call to untyped function "main" in typed context [no-untyped-call]'
         file_path, line_number, *_ = error_line.split(":")
         # mypy will report the first line as '1' rather than '0'.
@@ -212,6 +227,31 @@ def add_type_ignores(
         error_report_lines=error_report_lines,
     )
     update_files(file_updates=file_updates)
+
+
+def remove_unused_ignores(*, report_output: str) -> str:
+    """Remove ignores which are no longer needed, based on report output."""
+    report_lines = report_output.read_text().split("\n")
+    ignores_lines: list[FileUpdate] = sorted(
+        [
+            tuple(line.split(":", 2))
+            for line in report_lines
+            if 'error: Unused "type: ignore" comment' in line
+        ],
+        key=lambda x: (x[0], x[1]),
+    )
+
+    for file_path, grp in itertools.groupby(ignores_lines, key=lambda x: x[0]):
+        _grp = sorted(grp)
+        file_lines = pathlib.Path(file_path).read_text().split("\n")
+        for _, line_n, _ in _grp:
+            _line_n = int(line_n) - 1  # Decrease by 1 as mypy indexes from 1 not zero
+            regexp = r"#\s*type:\s*ignore(?:\[[^\]]*\])?"
+            file_lines[_line_n] = re.sub(regexp, "", file_lines[_line_n]).rstrip()
+
+        # Write updated file out.
+        with open(file_path, "w", encoding="utf8") as file:
+            file.write("\n".join(file_lines))
 
 
 # --- Call functions above.
@@ -254,6 +294,17 @@ def create_parser() -> argparse.ArgumentParser:
         help=('Add "# type: ignore[<error-code>]" to suppress all raised mypy errors.'),
         action="store_true",
     )
+
+    parser.add_argument(
+        "--remove_unused",
+        help=(
+            'Remove unused instances of "# type: ignore[<error-code>]" '
+            "if raised as an error by mypy."
+        ),
+        action="store_true",
+        default=False,
+    )
+
     parser.add_argument(
         "-o",
         "--mypy_report_output",
@@ -288,6 +339,9 @@ def main() -> int:
             mypy_flags=shlex.split(args.mypy_flags),
         )
         report_output.write_text(report, encoding="utf8")
+
+    if args.remove_unused:
+        remove_unused_ignores(report_output=report_output)
 
     if args.add_type_ignore:
         add_type_ignores(report_output=report_output)

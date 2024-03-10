@@ -46,6 +46,7 @@ options:
                         Where code is that needs report generating for it.
   -a, --add_type_ignore
                         Add "# type: ignore[<error-code>]" to suppress all raised mypy errors.
+  --remove_unused       Remove unused instances of "# type: ignore[<error-code>]" if raised as an error by mypy.
   -o MYPY_REPORT_OUTPUT, --mypy_report_output MYPY_REPORT_OUTPUT
                         File to save report output to (default is mypy_error_report.txt)
   --mypy_flags MYPY_FLAGS
