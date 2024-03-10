@@ -5,8 +5,10 @@ import io
 import itertools
 import pathlib
 import re
+import shlex
 import subprocess
 import sys
+import textwrap
 import tokenize
 from typing import TYPE_CHECKING, TypeVar
 
@@ -27,21 +29,39 @@ def raise_if_none(*, value: T | None) -> T:
     return value
 
 
-# --- generate mypy report
-
-
 def generate_mypy_error_report(
     *,
     path_to_code: pathlib.Path,
+    mypy_flags: list[str],
 ) -> str:
     """Run mypy and generate report with errors."""
-    mypy_command = [
-        "mypy",
-        f"{str(path_to_code)}",
-        "--show-error-codes",
-        "--no-pretty",
-        "--strict",
-    ]
+    no_arguments_passed = (len(mypy_flags) == 1) and mypy_flags[0] == ""
+
+    if no_arguments_passed:
+        # If no flags are passed we just assume we want to get things ready to
+        # use with --strict going forwards.
+        mypy_command = [
+            "mypy",
+            f"{str(path_to_code)}",
+            # Want error codes output from mypy to re-add in ignores.
+            "--show-error-codes",
+            # pretty output will format reports in an unexpected way for parsing.
+            "--no-pretty",
+            "--strict",  # Default is to assume we want to aim for --strict.
+        ]
+    else:
+        mypy_command = [
+            "mypy",
+            f"{str(path_to_code)}",
+            # Leaving --show-error-codes and --no-pretty as the error codes are
+            # necessary to enable parsing the report output and writing back to
+            # the files. --no-pretty is needed as, if there's a config setting
+            # to use pretty the report output is altered and not parsed
+            # properly.
+            "--show-error-codes",
+            "--no-pretty",
+            *mypy_flags,
+        ]
 
     print(f"Generating mypy report using: {' '.join(mypy_command)}")
 
@@ -197,7 +217,15 @@ def add_type_ignores(
 # --- Call functions above.
 def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description=("CLI tool for providing a clean slate for mypy usage within a project."),
+        description=textwrap.dedent(
+            """
+            CLI tool for providing a clean slate for mypy usage within a project.
+
+            Default expectation is to want to get a project into a state that it
+            will pass mypy when run with `--strict`, if this isn't the case custom
+            flags can be passed to mypy via the `--mypy_flags` argument.
+            """
+        ).strip(),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         # Hard-coding this as the usage is dynamic otherwise, based on where the
         # parser is defined. I'm using print_help() to generate the output of
@@ -231,6 +259,17 @@ def create_parser() -> argparse.ArgumentParser:
         "--mypy_report_output",
         help=("File to save report output to (default is mypy_error_report.txt)"),
     )
+
+    parser.add_argument(
+        "--mypy_flags",
+        type=str,
+        default="",
+        help=(
+            "Custom flags to pass to mypy (provide them as a single string, "
+            "default is to use --strict)"
+        ),
+    )
+
     return parser
 
 
@@ -244,7 +283,10 @@ def main() -> int:
         report_output = pathlib.Path(args.mypy_report_output)
 
     if args.generate_mypy_error_report:
-        report = generate_mypy_error_report(path_to_code=args.path_to_code)
+        report = generate_mypy_error_report(
+            path_to_code=args.path_to_code,
+            mypy_flags=shlex.split(args.mypy_flags),
+        )
         report_output.write_text(report, encoding="utf8")
 
     if args.add_type_ignore:
