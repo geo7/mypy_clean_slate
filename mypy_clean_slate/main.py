@@ -35,7 +35,7 @@ def generate_mypy_error_report(
     mypy_flags: list[str],
 ) -> str:
     """Run mypy and generate report with errors."""
-    no_arguments_passed = (len(mypy_flags) == 1) and mypy_flags[0] == ""
+    no_arguments_passed = (len(mypy_flags) == 0) or ((len(mypy_flags) == 1) and mypy_flags[0] == "")
 
     if no_arguments_passed:
         # If no flags are passed we just assume we want to get things ready to
