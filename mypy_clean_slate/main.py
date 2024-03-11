@@ -10,6 +10,7 @@ import subprocess
 import sys
 import textwrap
 import tokenize
+import warnings
 from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
@@ -108,7 +109,13 @@ def extract_code_comment(*, line: str) -> tuple[str, str]:
     # generate_tokens wants a "callable returning a single line of input"
     reader = io.StringIO(line).readline
 
-    comment_tokens = [t for t in tokenize.generate_tokens(reader) if t.type == tokenize.COMMENT]
+    # TODO(geo7): Handle multiline statements properly.
+    # https://github.com/geo7/mypy_clean_slate/issues/114
+    try:
+        comment_tokens = [t for t in tokenize.generate_tokens(reader) if t.type == tokenize.COMMENT]
+    except tokenize.TokenError as er:
+        warnings.warn(f"TokenError encountered: {er} for line {line}.", UserWarning, stacklevel=2)
+        return line, ""
 
     # If there's an inline comment then only expect a single one.
     if len(comment_tokens) != 1:

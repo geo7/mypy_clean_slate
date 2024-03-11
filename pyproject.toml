@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mypy_clean_slate"
-version = "0.3.3"
+version = "0.3.4"
 description = "CLI tool for providing a clean slate for mypy usage within a project."
 authors = ["George Lenton <georgelenton@gmail.com>"]
 license = "MIT"
@@ -42,8 +42,7 @@ ignore = [
     "ANN204",   #  Missing return type annotation for special method `__attrs_post_init__`
     "ANN206",   #  Missing return type annotation for classmethod `get_all_human_readable`
     "D100",     #  Missing docstring in public module
-    "COM812",
-    "ISC001",
+    "COM812",   #  missing-trailing-comma
     "D101",     #  Missing docstring in public class
     "D102",     #  Missing docstring in public method
     "D103",     #  Missing docstring in public function
@@ -53,6 +52,8 @@ ignore = [
     "D211",     #  no-blank-line-before-class
     "D212",     #  multi-line-summary-first-line
     "D401",     #  First line of docstring should be in imperative mood.
+    "FIX002",   #  Line contains TODO, consider resolving the issue
+    "ISC001",   #  single-line-implicit-string-concatenation
     "PD901",    #  `df` is a bad variable name.
     "PLR0913",  #  Too many arguments to function call (6 > 5)
     "PLW1510",  #  `subprocess.run` without explicit `check` argument
