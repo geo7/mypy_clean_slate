@@ -13,11 +13,28 @@ CLI tool for providing a clean slate for mypy usage within a project
 
 ## Motivation
 
-It can be difficult to get a large project to the point where `mypy --strict` can be run on it. Rather than incrementally increasing the severity of mypy, either overall or per module, `mypy_clean_slate` enables one to ignore all previous errors so that `mypy --strict` (or similar) can be used almost immediately. This enables all code written from that point on to be checked with `mypy --strict` (or whichever flags are preferred), gradually removing the `type: ignore` comments from that point onwards.
+It can be difficult to get a large project to the point where `mypy --strict`
+can be run on it. Rather than incrementally increasing the severity of mypy,
+either overall or per module, `mypy_clean_slate` enables one to ignore all
+previous errors so that `mypy --strict` (or similar) can be used almost
+immediately. This enables all code written from that point on to be checked with
+`mypy --strict` (or whichever flags are preferred), gradually removing the
+`type: ignore` comments from that point onwards.
 
-Often running `mypy_clean_slate` will cover all errors cleanly in a single pass, but there are cases when not all error output is generated first time, and it can be necessary to run a couple of times, checking the diffs. Example of this scenario is given.
+Often running `mypy_clean_slate` will cover all errors cleanly in a single pass,
+but there are cases when not all error output is generated first time, and it
+can be necessary to run a couple of times, checking the diffs. Example of this
+scenario is given.
 
-`mypy_clean_slate` works by parsing the output of `mypy --strict --show-error-codes`, and adding the relevant `type: ignore[code]` to each line. Only errors from the report are considered, notes are not handled. Meaning something such as `error: Function is missing a type annotation  [no-untyped-def]` will have `# type: ignore[no-untyped-def]` appended to the end of the line, whereas `note: (Skipping most remaining errors due to unresolved imports or missing stubs; fix these first)` will be ignored.
+By default `mypy_clean_slate` works by parsing the output of `mypy --strict` and
+adding the relevant `type: ignore[code]` to each line, though custom flags can
+be passed to mypy instead. Only errors from the report are considered, notes are
+not handled. Meaning something such as `error: Function is missing a type
+annotation  [no-untyped-def]` will have `# type: ignore[no-untyped-def]`
+appended to the end of the line, whereas `note: (Skipping most remaining errors
+due to unresolved imports or missing stubs; fix these first)` will be ignored.
+Errors relating to unused ignores (which might occur if code changes after
+adding the initial ignore) can also be handled.
 
 # Installation
 
@@ -93,7 +110,9 @@ And `mypy --strict` will now pass.
 
 ## Project example, using `pingouin`
 
-Project `pingouin` is located at: https://github.com/raphaelvallat/pingouin, and commit `ea8b5605a1776aaa0e89dd5c0e3df4320950fb38` is used for this example. `mypy_clean_slate` needs to be run a couple of times here.
+Project `pingouin` is located at: https://github.com/raphaelvallat/pingouin, and
+commit `ea8b5605a1776aaa0e89dd5c0e3df4320950fb38` is used for this example.
+`mypy_clean_slate` needs to be run a couple of times here.
 
 First, generate report and apply `type: ignore[<error code>]`
 
