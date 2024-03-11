@@ -151,6 +151,10 @@ def update_files(*, file_updates: list[FileUpdate]) -> None:
         file_lines = pathlib.Path(file_path).read_text(encoding="utf8").split("\n")
 
         python_code, python_comment = extract_code_comment(line=file_lines[line_number])
+        # In some cases it's possible for there to be multiple spaces added
+        # before '# type: ...' whereas we'd like to ensure only two spaces are
+        # added.
+        python_code = python_code.rstrip()
         mypy_ignore = f"# type: ignore[{error_codes}]"
 
         if python_comment:

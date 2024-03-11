@@ -47,7 +47,7 @@ def add(*, arg_1, arg_2):  # type: ignore[no-untyped-def]
     return arg_1 + arg_2
 
 
-add(arg_1=1, arg_2="s")   # type: ignore[no-untyped-call] # inline comment.
+add(arg_1=1, arg_2="s")  # type: ignore[no-untyped-call] # inline comment.
 
 
 def useless_sub(*, arg_1: float, arg_2: Sequence):  # type: ignore[name-defined, no-untyped-def]
