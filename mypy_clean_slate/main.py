@@ -117,8 +117,11 @@ def extract_code_comment(*, line: str) -> tuple[str, str]:
         warnings.warn(f"TokenError encountered: {er} for line {line}.", UserWarning, stacklevel=2)
         return line, ""
 
+    # Line doesn't contain a comment
+    if len(comment_tokens) == 0:
+        return line, ""
     # If there's an inline comment then only expect a single one.
-    if len(comment_tokens) != 1:
+    if len(comment_tokens) > 1:
         msg = f"Expected there to be a single comment token, have {len(comment_tokens)}"
         raise ValueError(
             msg,
