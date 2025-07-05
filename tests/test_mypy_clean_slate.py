@@ -196,3 +196,11 @@ def test_remove_used_ignores(tmp_path: pathlib.Path) -> None:
     main.remove_unused_ignores(report_output=report_output)
     main.add_type_ignores(report_output=report_output)
     assert python_file.read_text(encoding="utf8").strip() == py_file_after_fix
+
+
+def test_hash_in_string_literal() -> None:
+    """Ensure that '#' in a string literal is not treated as a comment."""
+    line = 'my_string = "hello #world"'
+    code, comment = main.extract_code_comment(line=line)
+    assert code == line
+    assert comment == ""
