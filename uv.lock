@@ -368,7 +368,7 @@ wheels = [
 
 [[package]]
 name = "mypy-clean-slate"
-version = "0.3.4"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "mypy" },
