@@ -20,11 +20,11 @@ mypy_clean_slate = "mypy_clean_slate.main:main"
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0,<9.0.0",
-    "pre-commit>=2.17,<4.0",
+    "pre-commit>=4.0.0",
     "ipython>=8.18.1",
     "ipdb>=0.13.9,<0.14.0",
     "ruff>=0.0.265",
-    "pytest-cov>=4.1.0,<5.0.0",
+    "pytest-cov>=5.0.0",
     "pdbpp>=0.10.3,<0.12.0",
 ]
 
