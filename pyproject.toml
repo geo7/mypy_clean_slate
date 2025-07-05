@@ -1,35 +1,37 @@
-[tool.poetry]
+[project]
 name = "mypy_clean_slate"
 version = "0.3.4"
 description = "CLI tool for providing a clean slate for mypy usage within a project."
-authors = ["George Lenton <georgelenton@gmail.com>"]
-license = "MIT"
+authors = [{ name = "George Lenton", email = "georgelenton@gmail.com" }]
+license = { text = "MIT" }
 readme = "README.md"
-homepage = "https://github.com/geo7/mypy_clean_slate"
-keywords = ['mypy', 'typing', 'typehint', 'type-hint']
+requires-python = ">=3.9"
+keywords = ["mypy", "typing", "typehint", "type-hint"]
+dependencies = [
+    "mypy>=0.910,<2.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-mypy = ">=0.910,<2.0"
+[project.urls]
+Homepage = "https://github.com/geo7/mypy_clean_slate"
 
-[tool.poetry.group.dev.dependencies]
-pytest = ">=8.0.0,<9.0.0"
-pre-commit = ">=2.17,<4.0"
-ipython = ">=8.18.1"
-ipdb = "^0.13.9"
-ruff = ">=0.0.265"
-pytest-cov = "^4.1.0"
-pdbpp = ">=0.10.3,<0.12.0"
-
-[tool.poetry.build]
-generate-setup-file = false
-
-[tool.poetry.scripts]
+[project.scripts]
 mypy_clean_slate = "mypy_clean_slate.main:main"
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0,<9.0.0",
+    "pre-commit>=2.17,<4.0",
+    "ipython>=8.18.1",
+    "ipdb>=0.13.9,<0.14.0",
+    "ruff>=0.0.265",
+    "pytest-cov>=4.1.0,<5.0.0",
+    "pdbpp>=0.10.3,<0.12.0",
+]
+
+
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 100
@@ -37,22 +39,21 @@ line-length = 100
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "ANN101",   #  Missing type annotation for `self` in method
-    "ANN102",   #  Missing type annotation for `cls` in classmethod
     "ANN204",   #  Missing return type annotation for special method `__attrs_post_init__`
     "ANN206",   #  Missing return type annotation for classmethod `get_all_human_readable`
     "D100",     #  Missing docstring in public module
-    "COM812",   #  missing-trailing-comma
     "D101",     #  Missing docstring in public class
     "D102",     #  Missing docstring in public method
     "D103",     #  Missing docstring in public function
     "D104",     #  Missing docstring in public package
     "D105",     #  Missing docstring in magic method
     "D107",     #  Missing docstring in `__init__`
+    "D203",     #  Conflicts with formatter
     "D211",     #  no-blank-line-before-class
     "D212",     #  multi-line-summary-first-line
     "D401",     #  First line of docstring should be in imperative mood.
     "FIX002",   #  Line contains TODO, consider resolving the issue
+    "COM812",   #  missing-trailing-comma
     "ISC001",   #  single-line-implicit-string-concatenation
     "PD901",    #  `df` is a bad variable name.
     "PLR0913",  #  Too many arguments to function call (6 > 5)

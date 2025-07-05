@@ -15,48 +15,48 @@ help:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
 
 clean:
-	@find . -type f -name "*.pyc" -delete
-	@find . -type d -name "__pycache__" -exec rm -rf {} +
-	@find . -type d -name ".pytest_cache" -exec rm -rf {} +
-	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	@find . -type d -name ".ipynb_checkpoints" -exec rm -rf {} +
+	@find . -path './.venv' -prune -o -type f -name "*.pyc" -delete
+	@find . -path './.venv' -prune -o -type d -name "__pycache__" -exec rm -rf {} +
+	@find . -path './.venv' -prune -o -type d -name ".pytest_cache" -exec rm -rf {} +
+	@find . -path './.venv' -prune -o -type d -name ".mypy_cache" -exec rm -rf {} +
+	@find . -path './.venv' -prune -o -type d -name ".ipynb_checkpoints" -exec rm -rf {} +
 
 cloc:
 	@echo "Code statistics using cloc:"
 	$(CLOC) --exclude-dir=venv .
 
 readme:
-	poetry run python -m scripts.add_help_to_readme
+	uv run python -m scripts.add_help_to_readme
 
 ########
 # LINT #
 ########
 
 pre-commit-run:
-	poetry run pre-commit run --all-files
+	uv run pre-commit run --all-files
 
 mypy:
-	poetry run mypy --strict .
+	uv run mypy --strict .
 
 lint: mypy
-	poetry run ruff check .
-	poetry run ruff format . --check
+	uv run ruff check .
+	uv run ruff format . --check
 	@$(MAKE) --no-print-directory clean
 
 format: pre-commit-run
-	poetry run ruff format .
-	poetry run ruff check . --fix
+	uv run ruff format .
+	uv run ruff check . --fix
 	@$(MAKE) --no-print-directory clean
 
-##########
-# POETRY #
-##########
+########
+# UV #
+########
 
-poetry.lock:
-	poetry lock --no-update
+uv.lock:
+	uv lock --check || uv lock
 
-install: poetry.lock
-	poetry install
+install: uv.lock
+	uv sync --all-extras
 	@$(MAKE) --no-print-directory clean
 
 ##########
@@ -64,6 +64,6 @@ install: poetry.lock
 ##########
 
 test: ## run tests
-	poetry run pytest --cov=mypy_clean_slate --cov-report=html
-	poetry run coverage html
+	uv run pytest -vv --cov=mypy_clean_slate --cov-report=html
+	uv run coverage html
 	@$(MAKE) --no-print-directory clean

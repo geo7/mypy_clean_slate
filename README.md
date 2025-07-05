@@ -1,13 +1,17 @@
 # Mypy Clean Slate
 
 
+
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![PyPI Latest Release](https://img.shields.io/pypi/v/mypy-clean-slate.svg)](https://pypi.org/project/mypy-clean-slate/)
 [![License](https://img.shields.io/pypi/l/mypy-clean-slate.svg)](https://github.com/geo7/mypy_clean_slate/blob/main/LICENSE)
 [![image](https://img.shields.io/pypi/pyversions/mypy-clean-slate.svg)](https://pypi.python.org/pypi/mypy-clean-slate)
 [![Actions status](https://github.com/geo7/mypy_clean_slate/workflows/CI/badge.svg)](https://github.com/geo7/mypy_clean_slate/actions)
 
-
+> _**Note:** This project was initially created to address a specific need with
+> some projects I was working on. While it may still be useful to others, It's
+> not something I'd typically use. I'd typically opt for ignoring rules / files
+> within pyproject.toml first._
 
 CLI tool for providing a clean slate for mypy usage within a project
 
@@ -59,15 +63,16 @@ options:
   -h, --help            show this help message and exit
   -r, --generate_mypy_error_report
                         Generate 'mypy_error_report.txt' in the cwd.
-  -p PATH_TO_CODE, --path_to_code PATH_TO_CODE
+  -p, --path_to_code PATH_TO_CODE
                         Where code is that needs report generating for it.
   -a, --add_type_ignore
                         Add "# type: ignore[<error-code>]" to suppress all raised mypy errors.
   --remove_unused       Remove unused instances of "# type: ignore[<error-code>]" if raised as an error by mypy.
-  -o MYPY_REPORT_OUTPUT, --mypy_report_output MYPY_REPORT_OUTPUT
+  -o, --mypy_report_output MYPY_REPORT_OUTPUT
                         File to save report output to (default is mypy_error_report.txt)
   --mypy_flags MYPY_FLAGS
                         Custom flags to pass to mypy (provide them as a single string, default is to use --strict)
+
 ```
 
 [comment]: # (CLI help split)

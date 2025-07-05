@@ -9,7 +9,7 @@ from mypy_clean_slate import __version__, main
 def test_version() -> None:
     # Ensure toml version is in sync with package version.
     with open("pyproject.toml") as f:
-        pyproject_version = [line for line in f.readlines() if line.startswith("version = ")]
+        pyproject_version = [line for line in f if line.startswith("version = ")]
     assert len(pyproject_version) == 1
     assert pyproject_version[0].strip().split(" = ")[-1].replace('"', "") == __version__
 
@@ -88,7 +88,7 @@ def test_no_duplicate_codes_added(tmp_path: pathlib.Path) -> None:
     from __future__ import annotations
 
     object().foo, object().bar  # type: ignore[attr-defined]
-    """
+    """,
     ).strip()
 
     python_file = pathlib.Path(tmp_path, "file_to_check.py")
@@ -131,7 +131,7 @@ def test_custom_mypy_flags(tmp_path: pathlib.Path) -> None:
 
     if __name__ == '__main__':
         raise SystemExit(main())
-    """
+    """,
     ).strip()
 
     python_file = pathlib.Path(tmp_path, "file_to_check.py")
@@ -141,7 +141,8 @@ def test_custom_mypy_flags(tmp_path: pathlib.Path) -> None:
     report_output = pathlib.Path(tmp_path, "testing_report_output.txt")
     report_output.write_text(
         main.generate_mypy_error_report(
-            path_to_code=python_file, mypy_flags=["--disallow-untyped-calls"]
+            path_to_code=python_file,
+            mypy_flags=["--disallow-untyped-calls"],
         ),
         encoding="utf8",
     )
@@ -177,7 +178,7 @@ def test_remove_used_ignores(tmp_path: pathlib.Path) -> None:
 
     if __name__ == '__main__':
         raise SystemExit(main())
-    """
+    """,
     ).strip()
 
     python_file = pathlib.Path(tmp_path, "file_to_check.py")
