@@ -1,6 +1,6 @@
 [project]
 name = "mypy_clean_slate"
-version = "0.3.4"
+version = "0.4.0"
 description = "CLI tool for providing a clean slate for mypy usage within a project."
 authors = [{ name = "George Lenton", email = "georgelenton@gmail.com" }]
 license = { text = "MIT" }
