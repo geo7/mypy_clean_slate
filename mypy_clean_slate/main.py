@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import io
 import itertools
+import logging
 import pathlib
 import re
 import shlex
@@ -21,6 +22,11 @@ T = TypeVar("T")
 # contains (file_path, line_number, error_code); file to update, line within that file to
 # append `type: ignore[<error-code>]`
 FileUpdate = tuple[str, int, str]
+
+log = logging.getLogger(__name__)
+
+
+DEFAULT_REPORT_FILE = "mypy_error_report.txt"
 
 
 def raise_if_none(*, value: T | None) -> T:
@@ -67,7 +73,7 @@ def generate_mypy_error_report(
     print(f"Generating mypy report using: {' '.join(mypy_command)}")
 
     # Mypy is likely to return '1' here (otherwise pointless using this script)
-    mypy_process = subprocess.run(  # pylint: disable=subprocess-run-check
+    mypy_process = subprocess.run(
         mypy_command,
         capture_output=True,
     )
@@ -117,7 +123,7 @@ def extract_code_comment(*, line: str) -> tuple[str, str]:
         warnings.warn(f"TokenError encountered: {er} for line {line}.", UserWarning, stacklevel=2)
         return line, ""
 
-    # Line doesn't contain a comment
+    # Line doesn't contain a comment
     if len(comment_tokens) == 0:
         return line, ""
     # If there's an inline comment then only expect a single one.
@@ -182,9 +188,7 @@ def update_files(*, file_updates: list[FileUpdate]) -> None:
 
 def line_contains_error(*, error_message: str) -> bool:
     """Ensure that the line contains an error message to extract."""
-    if re.match(r".*error.*\[.*\]$", error_message):
-        return True
-    return False
+    return bool(re.match(r".*error.*\[.*\]$", error_message))
 
 
 def line_is_unused_ignore(*, error_message: str) -> bool:
@@ -194,9 +198,7 @@ def line_is_unused_ignore(*, error_message: str) -> bool:
     These are treated differently to other messages, in this case the current
     type: ignore needs to be removed rather than adding one.
     """
-    if re.match('.*unused.ignore.*|Unused "type: ignore" comment', error_message):
-        return True
-    return False
+    return bool(re.match('.*unused.ignore.*|Unused "type: ignore" comment', error_message))
 
 
 def extract_file_line_number_and_error_code(
@@ -206,7 +208,7 @@ def extract_file_line_number_and_error_code(
     file_updates: list[FileUpdate] = []
     for error_line in error_report_lines:
         if (not line_contains_error(error_message=error_line)) or line_is_unused_ignore(
-            error_message=error_line
+            error_message=error_line,
         ):
             continue
 
@@ -243,12 +245,12 @@ def add_type_ignores(
     update_files(file_updates=file_updates)
 
 
-def remove_unused_ignores(*, report_output: str) -> str:
+def remove_unused_ignores(*, report_output: pathlib.Path) -> None:
     """Remove ignores which are no longer needed, based on report output."""
     report_lines = report_output.read_text().split("\n")
     ignores_lines: list[FileUpdate] = sorted(
         [
-            tuple(line.split(":", 2))
+            (line.split(":", 2)[0], int(line.split(":", 2)[1]), line.split(":", 2)[2])
             for line in report_lines
             if 'error: Unused "type: ignore" comment' in line
         ],
@@ -278,14 +280,14 @@ def create_parser() -> argparse.ArgumentParser:
             Default expectation is to want to get a project into a state that it
             will pass mypy when run with `--strict`, if this isn't the case custom
             flags can be passed to mypy via the `--mypy_flags` argument.
-            """
+            """,
         ).strip(),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         # Hard-coding this as the usage is dynamic otherwise, based on where the
         # parser is defined. I'm using print_help() to generate the output of
         # --help into the README so need this to be consistent. Otherwise,
         # creating the parser from within mod.py will put mod.py into the usage
-        # rather than the poetry.script entry point for the CLI.
+        # rather than the script entry point for the CLI.
         usage="mypy_clean_slate [options]",
     )
     parser.add_argument(
@@ -322,7 +324,7 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-o",
         "--mypy_report_output",
-        help=("File to save report output to (default is mypy_error_report.txt)"),
+        help=f"File to save report output to (default is {DEFAULT_REPORT_FILE})",
     )
 
     parser.add_argument(
@@ -339,11 +341,12 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
+    logging.basicConfig(level=logging.DEBUG)
     parser = create_parser()
     args = parser.parse_args()
 
     if args.mypy_report_output is None:
-        report_output = pathlib.Path("mypy_error_report.txt")
+        report_output = pathlib.Path(DEFAULT_REPORT_FILE)
     else:
         report_output = pathlib.Path(args.mypy_report_output)
 

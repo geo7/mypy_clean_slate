@@ -10,10 +10,11 @@ from scripts import add_help_to_readme
 
 @pytest.mark.skipif(
     # This test isn't critical to any application logic, and is caught by
-    # testing on other versions in CI. Change here is that argparse from
-    # >3.9 uses 'options' rather than 'optional arguments'.
-    sys.version_info < (3, 10),
-    reason="Changes in argparse output from 3.9 onwards.",
+    # testing on other versions in CI. Change here is that argparse from >3.9
+    # uses 'options' rather than 'optional arguments'. As long as it generates
+    # something correctly on _a_ python version I'm fine.
+    sys.version_info < (3, 13),
+    reason="Changes in argparse output.",
 )
 def test_readme_cli_help() -> None:
     """Test the README has up to date help output."""
