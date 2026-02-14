@@ -35,6 +35,10 @@ def test_mypy_clean_slate_usage(tmp_path: pathlib.Path) -> None:
 
     useless_sub(arg_1=3, arg_2=4)
     useless_sub(arg_1=3, arg_2="4")
+
+
+    def has_preexisting_ignore(arg_1: Sequence):  # type: ignore[name-defined]
+        return None
     """,
     ).strip()
 
@@ -56,6 +60,10 @@ def useless_sub(*, arg_1: float, arg_2: Sequence):  # type: ignore[name-defined,
 
 useless_sub(arg_1=3, arg_2=4)
 useless_sub(arg_1=3, arg_2="4")
+
+
+def has_preexisting_ignore(arg_1: Sequence):  # type: ignore[name-defined, no-untyped-def]
+    return None
     """.strip(),
     )
 
@@ -156,10 +164,12 @@ def test_remove_used_ignores(tmp_path: pathlib.Path) -> None:
     py_file_before_fix = textwrap.dedent(
         """
     def f(x : float) -> float:
-        return x ** 2
+        return x ** 2  # type: ignore
 
     def main() -> int:
-        y = f(12)  # type: ignore[no-untyped-call]
+        x = f(12)  # type: ignore[no-untyped-call]
+        y = f("foo")  # type: ignore[no-untyped-call, arg-type]
+        z = f("foo")  # type: ignore[arg-type, no-untyped-call]
         return 0
 
     if __name__ == '__main__':
@@ -173,7 +183,9 @@ def test_remove_used_ignores(tmp_path: pathlib.Path) -> None:
         return x ** 2
 
     def main() -> int:
-        y = f(12)
+        x = f(12)
+        y = f("foo")  # type: ignore[arg-type]
+        z = f("foo")  # type: ignore[arg-type]
         return 0
 
     if __name__ == '__main__':
