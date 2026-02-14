@@ -15,7 +15,7 @@ import warnings
 from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Iterable, Sequence
 
 
 T = TypeVar("T")
@@ -27,6 +27,8 @@ log = logging.getLogger(__name__)
 
 
 DEFAULT_REPORT_FILE = "mypy_error_report.txt"
+MYPY_IGNORE_REGEX = re.compile(r"type:\s*ignore(?:\[(?P<error_codes>[^\]]*)\])?")
+MYPY_IGNORE_WITH_COMMENT_REGEX = re.compile(r"#\s*type:\s*ignore(?:\[(?P<error_codes>[^\]]*)\])?")
 
 
 def raise_if_none(*, value: T | None) -> T:
@@ -163,15 +165,20 @@ def update_files(*, file_updates: list[FileUpdate]) -> None:
         key=lambda x: (x[0], x[1]),
     ):
         file_path, line_number = pth_and_line_num
-        error_codes = ", ".join(x[2] for x in grp)
+        error_codes = {x[2] for x in grp}
         file_lines = pathlib.Path(file_path).read_text(encoding="utf8").split("\n")
 
         python_code, python_comment = extract_code_comment(line=file_lines[line_number])
+
+        if python_comment:
+            error_codes |= _get_codes_from_line(python_comment)
+            python_comment = MYPY_IGNORE_WITH_COMMENT_REGEX.sub("", python_comment)
+
         # In some cases it's possible for there to be multiple spaces added
         # before '# type: ...' whereas we'd like to ensure only two spaces are
         # added.
         python_code = python_code.rstrip()
-        mypy_ignore = f"# type: ignore[{error_codes}]"
+        mypy_ignore = f"# type: ignore[{', '.join(sorted(error_codes))}]"
 
         if python_comment:
             line_update = f"{python_code}  {mypy_ignore} {python_comment}"
@@ -198,7 +205,7 @@ def line_is_unused_ignore(*, error_message: str) -> bool:
     These are treated differently to other messages, in this case the current
     type: ignore needs to be removed rather than adding one.
     """
-    return bool(re.match('.*unused.ignore.*|Unused "type: ignore" comment', error_message))
+    return bool(re.match('.*unused.ignore.*|Unused "type: ignore', error_message))
 
 
 def extract_file_line_number_and_error_code(
@@ -245,6 +252,19 @@ def add_type_ignores(
     update_files(file_updates=file_updates)
 
 
+def _parse_codes(error_codes: str) -> Iterable[str]:
+    for c in error_codes.split(","):
+        yield c.strip()
+
+
+def _get_codes_from_line(line: str) -> set[str]:
+    error_codes_found: set[str] = set()
+    for mo in MYPY_IGNORE_WITH_COMMENT_REGEX.finditer(line):
+        if error_codes := mo.group("error_codes"):
+            error_codes_found.update(_parse_codes(error_codes))
+    return error_codes_found
+
+
 def remove_unused_ignores(*, report_output: pathlib.Path) -> None:
     """Remove ignores which are no longer needed, based on report output."""
     report_lines = report_output.read_text().split("\n")
@@ -252,7 +272,7 @@ def remove_unused_ignores(*, report_output: pathlib.Path) -> None:
         [
             (line.split(":", 2)[0], int(line.split(":", 2)[1]), line.split(":", 2)[2])
             for line in report_lines
-            if 'error: Unused "type: ignore" comment' in line
+            if line_is_unused_ignore(error_message=line)
         ],
         key=lambda x: (x[0], x[1]),
     )
@@ -260,10 +280,27 @@ def remove_unused_ignores(*, report_output: pathlib.Path) -> None:
     for file_path, grp in itertools.groupby(ignores_lines, key=lambda x: x[0]):
         _grp = sorted(grp)
         file_lines = pathlib.Path(file_path).read_text().split("\n")
-        for _, line_n, _ in _grp:
+        for _, line_n, error_code in _grp:
             _line_n = int(line_n) - 1  # Decrease by 1 as mypy indexes from 1 not zero
-            regexp = r"#\s*type:\s*ignore(?:\[[^\]]*\])?"
-            file_lines[_line_n] = re.sub(regexp, "", file_lines[_line_n]).rstrip()
+
+            mo = MYPY_IGNORE_REGEX.search(error_code)
+            if mo and (error_codes := mo.group("error_codes")):
+                unused_ignores: set[str] = set(_parse_codes(error_codes))
+            else:
+                unused_ignores = set()
+
+            orig_line = file_lines[_line_n]
+
+            if (
+                unused_ignores
+                and (ignores_found := _get_codes_from_line(orig_line))
+                and (ignores_to_keep := sorted(ignores_found - unused_ignores))
+            ):
+                file_lines[_line_n] = MYPY_IGNORE_WITH_COMMENT_REGEX.sub(
+                    f"# type: ignore[{', '.join(ignores_to_keep)}]", orig_line
+                ).rstrip()
+            else:
+                file_lines[_line_n] = MYPY_IGNORE_WITH_COMMENT_REGEX.sub("", orig_line).rstrip()
 
         # Write updated file out.
         with open(file_path, "w", encoding="utf8") as file:
