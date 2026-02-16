@@ -159,6 +159,50 @@ def test_custom_mypy_flags(tmp_path: pathlib.Path) -> None:
     assert python_file.read_text(encoding="utf8").strip() == py_file_after_fix
 
 
+def test_cli_option_aliases() -> None:
+    """Ensure hyphenated and underscored long options both work."""
+    parser = main.create_parser()
+    args_hyphen = parser.parse_args(
+        [
+            "--generate-mypy-error-report",
+            "--path-to-code",
+            "src",
+            "--add-type-ignore",
+            "--remove-unused",
+            "--mypy-report-output",
+            "report.txt",
+            "--mypy-flags=--disallow-untyped-calls",
+        ],
+    )
+
+    assert args_hyphen.generate_mypy_error_report is True
+    assert args_hyphen.path_to_code == "src"
+    assert args_hyphen.add_type_ignore is True
+    assert args_hyphen.remove_unused is True
+    assert args_hyphen.mypy_report_output == "report.txt"
+    assert args_hyphen.mypy_flags == "--disallow-untyped-calls"
+
+    args_underscore = parser.parse_args(
+        [
+            "--generate_mypy_error_report",
+            "--path_to_code",
+            "src",
+            "--add_type_ignore",
+            "--remove_unused",
+            "--mypy_report_output",
+            "report.txt",
+            "--mypy_flags=--disallow-untyped-calls",
+        ],
+    )
+
+    assert args_underscore.generate_mypy_error_report is True
+    assert args_underscore.path_to_code == "src"
+    assert args_underscore.add_type_ignore is True
+    assert args_underscore.remove_unused is True
+    assert args_underscore.mypy_report_output == "report.txt"
+    assert args_underscore.mypy_flags == "--disallow-untyped-calls"
+
+
 def test_custom_mypy_config_file(tmp_path: pathlib.Path) -> None:
     """
     Ensure passing --config-file uses mypy settings from that file.

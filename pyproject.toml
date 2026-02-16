@@ -16,6 +16,7 @@ Homepage = "https://github.com/geo7/mypy_clean_slate"
 
 [project.scripts]
 mypy_clean_slate = "mypy_clean_slate.main:main"
+mypy-clean-slate = "mypy_clean_slate.main:main"
 
 [project.optional-dependencies]
 dev = [

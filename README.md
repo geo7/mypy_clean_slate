@@ -57,36 +57,41 @@ CLI tool for providing a clean slate for mypy usage within a project.
 
 Default expectation is to want to get a project into a state that
 it will pass mypy when run with `--strict`, if this isn't the case
-custom flags can be passed to mypy via the `--mypy_flags` argument.
-Using `--mypy_flags` will overwrite the default `--strict`
+custom flags can be passed to mypy via the `--mypy-flags` argument.
+Using `--mypy-flags` will overwrite the default `--strict`
 behaviour, enabling a single rule to be passed explicitly or read
 from a config file.
 
 Example usage:
 
->>> mypy_clean_slate -r --mypy_flags=--disallow-untyped-calls
->>> mypy_clean_slate -r --mypy_flags="--disallow-untyped-calls --warn-unused-ignores"
+>>> mypy_clean_slate -r --mypy-flags=--disallow-untyped-calls
+>>> mypy_clean_slate -r --mypy-flags="--disallow-untyped-calls --warn-unused-ignores"
 
 Note: flags need to be passed after '=' not space separated, the
 following will fail:
 
->>> mypy_clean_slate -r --mypy_flags "--disallow-untyped-calls"
+>>> mypy_clean_slate -r --mypy-flags "--disallow-untyped-calls"
 
 See README for more details: https://github.com/geo7/mypy_clean_slate
 
 options:
   -h, --help            show this help message and exit
-  -r, --generate_mypy_error_report
+  -r, --generate-mypy-error-report, --generate_mypy_error_report
                         Generate 'mypy_error_report.txt' in the cwd.
-  -p, --path_to_code PATH_TO_CODE
+  -p, --path-to-code, --path_to_code PATH_TO_CODE
                         Where code is that needs report generating for it.
-  -a, --add_type_ignore
-                        Add "# type: ignore[<error-code>]" to suppress all raised mypy errors.
-  --remove_unused       Remove unused instances of "# type: ignore[<error-code>]" if raised as an error by mypy.
-  -o, --mypy_report_output MYPY_REPORT_OUTPUT
-                        File to save report output to (default is mypy_error_report.txt)
-  --mypy_flags MYPY_FLAGS
-                        Custom flags to pass to mypy (provide them as a single string, default is to use --strict)
+  -a, --add-type-ignore, --add_type_ignore
+                        Add "# type: ignore[<error-code>]" to suppress all
+                        raised mypy errors.
+  --remove-unused, --remove_unused
+                        Remove unused instances of "# type: ignore[<error-
+                        code>]" if raised as an error by mypy.
+  -o, --mypy-report-output, --mypy_report_output MYPY_REPORT_OUTPUT
+                        File to save report output to (default is
+                        mypy_error_report.txt)
+  --mypy-flags, --mypy_flags MYPY_FLAGS
+                        Custom flags to pass to mypy (provide them as a single
+                        string, default is to use --strict)
 
 ```
 

@@ -316,21 +316,21 @@ def create_parser() -> argparse.ArgumentParser:
 
             Default expectation is to want to get a project into a state that
             it will pass mypy when run with `--strict`, if this isn't the case
-            custom flags can be passed to mypy via the `--mypy_flags` argument.
-            Using `--mypy_flags` will overwrite the default `--strict`
+            custom flags can be passed to mypy via the `--mypy-flags` argument.
+            Using `--mypy-flags` will overwrite the default `--strict`
             behaviour, enabling a single rule to be passed explicitly or read
             from a config file.
 
             Example usage:
 
-            >>> mypy_clean_slate -r --mypy_flags=--disallow-untyped-calls
-            >>> mypy_clean_slate -r --mypy_flags="--disallow-untyped-calls --warn-unused-ignores"
+            >>> mypy_clean_slate -r --mypy-flags=--disallow-untyped-calls
+            >>> mypy_clean_slate -r --mypy-flags="--disallow-untyped-calls --warn-unused-ignores"
 
 
             Note: flags need to be passed after '=' not space separated, the
             following will fail:
 
-            >>> mypy_clean_slate -r --mypy_flags "--disallow-untyped-calls"
+            >>> mypy_clean_slate -r --mypy-flags "--disallow-untyped-calls"
 
             See README for more details: https://github.com/geo7/mypy_clean_slate
             """,
@@ -345,6 +345,7 @@ def create_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "-r",
+        "--generate-mypy-error-report",
         "--generate_mypy_error_report",
         help=("Generate 'mypy_error_report.txt' in the cwd."),
         action="store_true",
@@ -352,6 +353,7 @@ def create_parser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         "-p",
+        "--path-to-code",
         "--path_to_code",
         help=("Where code is that needs report generating for it."),
         default=pathlib.Path("."),
@@ -359,12 +361,14 @@ def create_parser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         "-a",
+        "--add-type-ignore",
         "--add_type_ignore",
         help=('Add "# type: ignore[<error-code>]" to suppress all raised mypy errors.'),
         action="store_true",
     )
 
     parser.add_argument(
+        "--remove-unused",
         "--remove_unused",
         help=(
             'Remove unused instances of "# type: ignore[<error-code>]" '
@@ -376,11 +380,13 @@ def create_parser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         "-o",
+        "--mypy-report-output",
         "--mypy_report_output",
         help=f"File to save report output to (default is {DEFAULT_REPORT_FILE})",
     )
 
     parser.add_argument(
+        "--mypy-flags",
         "--mypy_flags",
         type=str,
         default="",
