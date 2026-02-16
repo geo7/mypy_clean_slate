@@ -25,8 +25,8 @@ cloc:
 	@echo "Code statistics using cloc:"
 	$(CLOC) --exclude-dir=venv .
 
-readme:
-	uv run python -m scripts.add_help_to_readme
+add-help-to-readme: ## Update README.md with CLI help text.
+	NO_COLOR=1 PYTHON_COLORS=0 uv run python -m scripts.add_help_to_readme
 
 ########
 # LINT #
@@ -47,6 +47,9 @@ format: pre-commit-run
 	uv run ruff format .
 	uv run ruff check . --fix
 	@$(MAKE) --no-print-directory clean
+
+
+checks: pre-commit-run format lint test ## Run through all formatting/linting/tests
 
 ########
 # UV #

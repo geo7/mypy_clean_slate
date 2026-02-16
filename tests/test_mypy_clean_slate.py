@@ -159,6 +159,77 @@ def test_custom_mypy_flags(tmp_path: pathlib.Path) -> None:
     assert python_file.read_text(encoding="utf8").strip() == py_file_after_fix
 
 
+def test_custom_mypy_config_file(tmp_path: pathlib.Path) -> None:
+    """
+    Ensure passing --config-file uses mypy settings from that file.
+
+    Default behaviour is to use --strict, but if arguments are passed they're
+    used instead. One of the arguments might be a config file (which might make
+    things easier if there are a lot of arguments to pass).
+
+    This test is just making explicit the use of config file being passed in as
+    an argument.
+    """
+    py_file_before_fix = textwrap.dedent(
+        """
+    def f(x):
+        return x ** 2
+
+    def main() -> int:
+        y = f(12)
+        return 0
+
+    if __name__ == '__main__':
+        raise SystemExit(main())
+    """,
+    ).strip()
+
+    py_file_after_fix = textwrap.dedent(
+        """
+    def f(x):
+        return x ** 2
+
+    def main() -> int:
+        y = f(12)  # type: ignore[no-untyped-call]
+        return 0
+
+    if __name__ == '__main__':
+        raise SystemExit(main())
+    """,
+    ).strip()
+
+    mypy_config_file = pathlib.Path(tmp_path, "mypy.toml")
+
+    # Config that enables only disallow_untyped_calls, for the python above
+    # we'd typically get a couple of errors, using this config (instead of
+    # --strict) will raise only the no-untyped-def error.
+    mypy_config_file.write_text(
+        textwrap.dedent(
+            """
+            [tool.mypy]
+            disallow_untyped_calls = true
+            """,
+        ).strip()
+        + "\n",
+        encoding="utf8",
+    )
+
+    python_file = pathlib.Path(tmp_path, "file_to_check.py")
+    python_file.write_text(py_file_before_fix, encoding="utf8")
+
+    report_output = pathlib.Path(tmp_path, "testing_report_output.txt")
+    report_output.write_text(
+        main.generate_mypy_error_report(
+            path_to_code=python_file,
+            mypy_flags=["--config-file", str(mypy_config_file)],
+        ),
+        encoding="utf8",
+    )
+
+    main.add_type_ignores(report_output=report_output)
+    assert python_file.read_text(encoding="utf8").strip() == py_file_after_fix
+
+
 def test_remove_used_ignores(tmp_path: pathlib.Path) -> None:
     """Ensure unused ignores raised as errors are removed."""
     py_file_before_fix = textwrap.dedent(
