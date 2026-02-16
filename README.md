@@ -55,9 +55,24 @@ usage: mypy_clean_slate [options]
 
 CLI tool for providing a clean slate for mypy usage within a project.
 
-Default expectation is to want to get a project into a state that it
-will pass mypy when run with `--strict`, if this isn't the case custom
-flags can be passed to mypy via the `--mypy_flags` argument.
+Default expectation is to want to get a project into a state that
+it will pass mypy when run with `--strict`, if this isn't the case
+custom flags can be passed to mypy via the `--mypy_flags` argument.
+Using `--mypy_flags` will overwrite the default `--strict`
+behaviour, enabling a single rule to be passed explicitly or read
+from a config file.
+
+Example usage:
+
+>>> mypy_clean_slate -r --mypy_flags=--disallow-untyped-calls
+>>> mypy_clean_slate -r --mypy_flags="--disallow-untyped-calls --warn-unused-ignores"
+
+Note: flags need to be passed after '=' not space separated, the
+following will fail:
+
+>>> mypy_clean_slate -r --mypy_flags "--disallow-untyped-calls"
+
+See README for more details: https://github.com/geo7/mypy_clean_slate
 
 options:
   -h, --help            show this help message and exit
@@ -79,7 +94,14 @@ options:
 
 See `./tests/test_mypy_clean_slate.py` for some examples with before/after.
 
+## Using mypy config file
 
+To pass a config file instead of explicitly listing arguments or using the
+tools default `--strict` you can use:
+
+```sh
+mypy_clean_slate -ra --mypy_flags="--config-file pyproject.toml"
+```
 
 # Examples
 
