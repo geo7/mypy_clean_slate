@@ -368,7 +368,7 @@ wheels = [
 
 [[package]]
 name = "mypy-clean-slate"
-version = "0.5.0"
+version = "0.5.1"
 source = { editable = "." }
 dependencies = [
     { name = "mypy" },
@@ -392,9 +392,9 @@ requires-dist = [
     { name = "ipdb", marker = "extra == 'dev'", specifier = ">=0.13.9,<0.14.0" },
     { name = "ipython", marker = "extra == 'dev'", specifier = ">=8.18.1" },
     { name = "mypy", specifier = ">=0.910,<2.0" },
-    { name = "pdbpp", marker = "extra == 'dev'", specifier = ">=0.10.3,<0.12.0" },
+    { name = "pdbpp", marker = "extra == 'dev'", specifier = ">=0.10.3,<0.13.0" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.0.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0,<9.0.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0,<10.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5.0.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.0.265" },
 ]
