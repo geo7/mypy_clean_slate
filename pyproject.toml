@@ -8,7 +8,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 keywords = ["mypy", "typing", "typehint", "type-hint"]
 dependencies = [
-    "mypy>=0.910,<2.0",
+    "mypy>=0.910,<3.0",
 ]
 
 [project.urls]
